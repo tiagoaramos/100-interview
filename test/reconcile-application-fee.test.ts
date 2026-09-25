@@ -59,6 +59,8 @@ describe("succeeded sign-up fee", () => {
     db.receipts.push({ paymentIntentId: "pi_open", applicationId: "app-1", note: "application fee" })
 
     expect(await reconcile()).toBe("paid")
+    expect(db.findReceiptCalls).toBe(1)
+    expect(db.insertCalls).toBe(0)
     expect(db.receipts).toHaveLength(1)
   })
 
@@ -185,6 +187,23 @@ describe("stale and mismatched jobs", () => {
     expect(await reconcile()).toBe("skipped")
     expect(invoice()?.payment).toBe("unpaid")
     expect(invoice()?.currentPaymentIntentId).toBe("pi_new")
+    expect(db.findReceiptCalls).toBe(0)
+    expect(db.insertCalls).toBe(0)
+    expect(db.receipts).toHaveLength(0)
+  })
+
+  test("ops swapping the payment intent before insert writes no receipt", async () => {
+    stripe.intents = [buildIntent()]
+    db.onBeforeInsert = () => {
+      db.invoices.get("app-1")!.currentPaymentIntentId = "pi_new"
+    }
+
+    expect(await reconcile()).toBe("skipped")
+    expect(invoice()?.payment).toBe("unpaid")
+    expect(invoice()?.currentPaymentIntentId).toBe("pi_new")
+    expect(db.findReceiptCalls).toBe(1)
+    expect(db.insertCalls).toBe(1)
+    expect(db.receipts).toHaveLength(0)
   })
 
   test("Stripe returning a different payment intent throws", async () => {
@@ -211,9 +230,9 @@ describe("failures and retries", () => {
 
   test("receipt insert failure leaves the application unpaid and the retry succeeds", async () => {
     stripe.intents = [buildIntent()]
-    db.failNext.add("insertReceipt")
+    db.failNext.add("insertReceiptIfCurrent")
 
-    await expect(reconcile()).rejects.toThrow("insertReceipt failed")
+    await expect(reconcile()).rejects.toThrow("insertReceiptIfCurrent failed")
     expect(invoice()?.payment).toBe("unpaid")
     expect(db.receipts).toHaveLength(0)
 

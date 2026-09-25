@@ -5,6 +5,9 @@ export class MemoryStore implements FeeStore {
   receipts: Receipt[] = []
   latencyMs = 0
   failNext = new Set<keyof FeeStore>()
+  findReceiptCalls = 0
+  insertCalls = 0
+  onBeforeInsert: ((row: Receipt) => void) | null = null
 
   async getInvoice(id: string): Promise<Invoice | null> {
     await this.pause("getInvoice")
@@ -14,6 +17,7 @@ export class MemoryStore implements FeeStore {
 
   async findReceipt(paymentIntentId: string): Promise<Receipt | null> {
     await this.pause("findReceipt")
+    this.findReceiptCalls++
     const receipt = this.receipts.find((row) => row.paymentIntentId === paymentIntentId)
     return receipt ? { ...receipt } : null
   }
@@ -24,6 +28,21 @@ export class MemoryStore implements FeeStore {
       return
     }
     this.receipts.push({ ...row })
+  }
+
+  async insertReceiptIfCurrent(applicationId: string, row: Receipt): Promise<boolean> {
+    await this.pause("insertReceiptIfCurrent")
+    this.insertCalls++
+    this.onBeforeInsert?.(row)
+    const invoice = this.invoices.get(applicationId)
+    if (!invoice || invoice.currentPaymentIntentId !== row.paymentIntentId) {
+      return false
+    }
+    if (this.receipts.some((existing) => existing.paymentIntentId === row.paymentIntentId)) {
+      return true
+    }
+    this.receipts.push({ ...row })
+    return true
   }
 
   async markPaid(applicationId: string, paymentIntentId: string): Promise<boolean> {

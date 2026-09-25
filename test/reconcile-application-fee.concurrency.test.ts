@@ -92,12 +92,26 @@ describe("concurrent reconciliation", () => {
 
     expect(new Set(results)).toEqual(new Set(["skipped"]))
     expect(db.invoices.get("app-1")?.payment).toBe("unpaid")
+    expect(db.receipts).toHaveLength(0)
+  })
+
+  test("ops swapping the payment intent before insert never records a receipt", async () => {
+    stripe.intents = [buildIntent()]
+    db.onBeforeInsert = () => {
+      db.invoices.get("app-1")!.currentPaymentIntentId = "pi_new"
+    }
+
+    const results = await times(20, () => reconcile())
+
+    expect(new Set(results)).toEqual(new Set(["skipped"]))
+    expect(db.invoices.get("app-1")?.payment).toBe("unpaid")
+    expect(db.receipts).toHaveLength(0)
   })
 
   test("mixed storm with transient failures converges to paid with one receipt", async () => {
     stripe.intents = [buildIntent()]
     stripe.failNextRetrieve = true
-    db.failNext.add("insertReceipt")
+    db.failNext.add("insertReceiptIfCurrent")
     db.failNext.add("markPaid")
 
     const settled = await Promise.allSettled([

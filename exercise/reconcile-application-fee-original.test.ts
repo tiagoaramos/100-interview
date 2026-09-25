@@ -50,6 +50,15 @@ beforeEach(() => {
     async insertReceipt(row) {
       receipts.push(row)
     },
+    async insertReceiptIfCurrent(_applicationId, row) {
+      if (invoice.currentPaymentIntentId !== row.paymentIntentId) {
+        return false
+      }
+      if (!receipts.some((existing) => existing.paymentIntentId === row.paymentIntentId)) {
+        receipts.push(row)
+      }
+      return true
+    },
     async markPaid(_applicationId, paymentIntentId) {
       if (invoice.currentPaymentIntentId !== paymentIntentId) {
         return false

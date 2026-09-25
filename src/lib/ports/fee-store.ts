@@ -7,6 +7,9 @@ export interface FeeStore {
   // Must be atomic and idempotent per paymentIntentId (unique constraint +
   // insert-or-ignore); concurrent deliveries rely on it to avoid duplicates.
   insertReceipt(row: Receipt): Promise<void>
+  // Inserts only while the invoice still expects this PaymentIntent. Returns
+  // false without writing when ops swapped currentPaymentIntentId.
+  insertReceiptIfCurrent(applicationId: string, row: Receipt): Promise<boolean>
   // Compare-and-set: only marks paid while the invoice still expects
   // paymentIntentId. Returns false when ops swapped the payment in between.
   markPaid(applicationId: string, paymentIntentId: string): Promise<boolean>
