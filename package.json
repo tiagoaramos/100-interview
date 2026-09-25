@@ -1,0 +1,14 @@
+{
+  "name": "100-interview",
+  "private": true,
+  "type": "module",
+  "module": "src/reconcile-application-fee.ts",
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  }
+}
