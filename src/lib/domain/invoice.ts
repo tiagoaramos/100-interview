@@ -1,4 +1,4 @@
-import type { ChargeType } from "./charge-type"
+import type { ChargeType } from "./charge-type.ts"
 
 export type Invoice = {
   id: string

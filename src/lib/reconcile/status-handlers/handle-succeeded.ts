@@ -1,4 +1,4 @@
-import type { StatusHandler } from "../types/status-handler"
+import type { StatusHandler } from "../status-handler.ts"
 
 export const handleSucceeded: StatusHandler = async ({ deps, job, invoice, intent }) => {
   if (invoice.chargeType !== "application_fee" || intent.chargeType !== "application_fee") {

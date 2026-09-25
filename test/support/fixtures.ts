@@ -1,6 +1,4 @@
-import type { Invoice } from "../types/invoice"
-import type { PaymentIntent } from "../types/payment-intent"
-import type { ReconcileJob } from "../types/reconcile-job"
+import type { Invoice, PaymentIntent, ReconcileJob } from "../../src/index.ts"
 
 export function buildInvoice(overrides: Partial<Invoice> = {}): Invoice {
   return {

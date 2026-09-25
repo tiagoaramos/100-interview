@@ -1,5 +1,5 @@
-import type { Invoice } from "./invoice"
-import type { Receipt } from "./receipt"
+import type { Invoice } from "../domain/invoice.ts"
+import type { Receipt } from "../domain/receipt.ts"
 
 export interface FeeStore {
   getInvoice(id: string): Promise<Invoice | null>

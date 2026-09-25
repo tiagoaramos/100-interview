@@ -1,3 +1,3 @@
-import type { StatusHandler } from "../types/status-handler"
+import type { StatusHandler } from "../status-handler.ts"
 
 export const handleCanceled: StatusHandler = async () => "canceled"

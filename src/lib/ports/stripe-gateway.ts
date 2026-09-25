@@ -1,4 +1,4 @@
-import type { PaymentIntent } from "./payment-intent"
+import type { PaymentIntent } from "../domain/payment-intent.ts"
 
 export interface StripeGateway {
   retrievePaymentIntent(id: string): Promise<PaymentIntent>

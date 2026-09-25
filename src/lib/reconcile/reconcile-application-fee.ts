@@ -1,7 +1,7 @@
-import { statusHandlers } from "./status-handlers/status-handlers"
-import type { ReconcileDeps } from "./types/reconcile-deps"
-import type { ReconcileJob } from "./types/reconcile-job"
-import type { ReconcileResult } from "./types/reconcile-result"
+import type { ReconcileJob } from "../domain/reconcile-job.ts"
+import type { ReconcileResult } from "../domain/reconcile-result.ts"
+import type { ReconcileDeps } from "../ports/reconcile-deps.ts"
+import { statusHandlers } from "./status-handlers/status-handlers.ts"
 
 export async function reconcileApplicationFee(
   deps: ReconcileDeps,

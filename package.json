@@ -2,7 +2,10 @@
   "name": "100-interview",
   "private": true,
   "type": "module",
-  "module": "src/reconcile-application-fee.ts",
+  "module": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "test": "bun test",
     "typecheck": "tsc --noEmit"

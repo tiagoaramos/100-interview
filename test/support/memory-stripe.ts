@@ -1,5 +1,4 @@
-import type { PaymentIntent } from "./types/payment-intent"
-import type { StripeGateway } from "./types/stripe-gateway"
+import type { PaymentIntent, StripeGateway } from "../../src/index.ts"
 
 export class MemoryStripe implements StripeGateway {
   intents: PaymentIntent[] = []
@@ -8,10 +7,10 @@ export class MemoryStripe implements StripeGateway {
   retrieveCalls = 0
   onRetrieve: ((id: string) => void) | null = null
 
-  async retrievePaymentIntent(id: string) {
+  async retrievePaymentIntent(id: string): Promise<PaymentIntent> {
     this.retrieveCalls++
     this.onRetrieve?.(id)
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * this.latencyMs))
+    await Bun.sleep(Math.random() * this.latencyMs)
     if (this.failNextRetrieve) {
       this.failNextRetrieve = false
       throw new Error("Stripe unavailable")
@@ -21,7 +20,7 @@ export class MemoryStripe implements StripeGateway {
     return { ...found }
   }
 
-  async listPaymentIntents() {
+  async listPaymentIntents(_customerId: string): Promise<PaymentIntent[]> {
     return this.intents.map((row) => ({ ...row }))
   }
 }

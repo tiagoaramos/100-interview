@@ -1,5 +1,5 @@
-import type { ChargeType } from "./charge-type"
-import type { PaymentIntentStatus } from "./payment-intent-status"
+import type { ChargeType } from "./charge-type.ts"
+import type { PaymentIntentStatus } from "./payment-intent-status.ts"
 
 export type PaymentIntent = {
   id: string

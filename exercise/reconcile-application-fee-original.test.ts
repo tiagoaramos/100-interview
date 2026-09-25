@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, test } from "bun:test"
 
-import { reconcileApplicationFee as reconcileFixed } from "./reconcile-application-fee"
+import {
+  reconcileApplicationFee as reconcileFixed,
+  type FeeStore as FixedFeeStore,
+  type StripeGateway as FixedStripeGateway,
+} from "../src/index.ts"
 import {
   reconcileApplicationFee,
   type FeeStore,
@@ -8,9 +12,7 @@ import {
   type PaymentIntent,
   type Receipt,
   type StripeGateway,
-} from "./reconcile-application-fee-original"
-import type { FeeStore as FixedFeeStore } from "./types/fee-store"
-import type { StripeGateway as FixedStripeGateway } from "./types/stripe-gateway"
+} from "./reconcile-application-fee-original.ts"
 
 let invoice: Invoice
 let receipts: Receipt[]
